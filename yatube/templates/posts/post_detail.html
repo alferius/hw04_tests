@@ -1,9 +1,9 @@
 {% extends "base.html" %}
   {% block title %}
     <title>{{ title }}</title>
-  {% endblock title %}   
+  {% endblock title %} 
   {% block content %}
-  <div class="container py-5">  
+  <div class="container py-5">
         <ul>
           <li>
             Дата публикации: {{ post.pub_date|date:"d E Y"}}
@@ -23,14 +23,14 @@
           {% endif %}
           </li>
           <li>
-            Всего постов автора:  <span > {{ posts_count }} </span>
+            Всего постов автора: <span > {{ posts_count }} </span>
           </li>
           <li>
             <a href="{% url 'post:profile' post.author %}">все посты пользователя</a>
           </li>
         </ul>
           <p>
-           {{ post.text|linebreaksbr  }}           
+           {{ post.text|linebreaksbr }} 
           </p>
           {% if is_edit %}
             <a href="{% url 'post:post_edit' post.id %}"> Редактировать статью </a>

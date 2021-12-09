@@ -21,9 +21,9 @@
         Дата публикации: {{ post.pub_date|date:"d E Y" }}
       </li>
     </ul>
-    <p>{{ post.text|linebreaksbr }}</p>    
+    <p>{{ post.text|linebreaksbr }}</p>
     {% if not forloop.last %}<hr>{% endif %}
-  {% endfor %}  
+  {% endfor %}
   {% include "posts/includes/paginator.html" %}
   </div>
 {% endblock content %}

@@ -6,9 +6,9 @@
 
 {% endblock title %} 
 {% block content %}
-<div class="container py-5">        
+<div class="container py-5">
   <h1>Все посты пользователя {{ username }} </h1>
-  <h3>Всего постов: {{ posts_count }} </h3>   
+  <h3>Всего постов: {{ username.posts.count }} </h3>
   {% for post in page_obj %}
     <ul>
       <li>

@@ -1,12 +1,19 @@
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from posts.models import Group, Post
 
-User = get_user_model()
+from posts.models import Group, Post, User
 
 
 class UsersViewsTest(TestCase):
+    USER_LOGOUT_URL = reverse('users:logout')
+    USER_SIGNUP_URL = reverse('users:signup')
+    USER_LOGIN_URL = reverse('users:login')
+    USER_PASSWORD_RESET_URL = reverse('users:password_reset')
+    USER_PASSWORD_RESET_DONE_URL = reverse('users:password_reset_done')
+    USER_PASSWORD_RESET_COMPLETE_URL = reverse('users:password_reset_complete')
+    USER_PASSWORD_CHANGE_URL = reverse('users:password_change')
+    USER_PASSWORD_CHANGE_DONE_URL = reverse('users:password_change_done')
+
     @classmethod
     def setUpClass(self):
         super().setUpClass()
@@ -31,17 +38,17 @@ class UsersViewsTest(TestCase):
     def test_names_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         link_names_n_templates = {
-            reverse('users:logout'): 'users/logged_out.html',
-            reverse('users:signup'): 'users/signup.html',
-            reverse('users:login'): 'users/login.html',
-            reverse('users:password_reset'): 'users/password_reset_form.html',
-            reverse('users:password_reset_done'):
+            self.USER_LOGOUT_URL: 'users/logged_out.html',
+            self.USER_SIGNUP_URL: 'users/signup.html',
+            self.USER_LOGIN_URL: 'users/login.html',
+            self.USER_PASSWORD_RESET_URL: 'users/password_reset_form.html',
+            self.USER_PASSWORD_RESET_DONE_URL:
                 'users/password_reset_done.html',
-            reverse('users:password_reset_complete'):
+            self.USER_PASSWORD_RESET_COMPLETE_URL:
                 'users/password_reset_complete.html',
-            reverse('users:password_change'):
+            self.USER_PASSWORD_CHANGE_URL:
                 'users/password_change_form.html',
-            reverse('users:password_change_done'):
+            self.USER_PASSWORD_CHANGE_DONE_URL:
                 'users/password_change_done.html',
         }
 

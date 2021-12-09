@@ -4,15 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-
 from posts.forms import PostForm
+
+from yatube.settings import POSTS_ON_THE_PAGES
 
 from .models import Group, Post, User
 
 
 def index(request):
     posts = Post.objects.all()
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(posts, POSTS_ON_THE_PAGES)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -24,7 +25,7 @@ def index(request):
 def group_posts(request, SlugField):
     group = get_object_or_404(Group, slug=SlugField)
     posts = group.groups4all.all()
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(posts, POSTS_ON_THE_PAGES)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -37,15 +38,13 @@ def group_posts(request, SlugField):
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     posts = user.posts.all()
-    posts_count = user.posts.all().count()
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(posts, POSTS_ON_THE_PAGES)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
         'username': user,
         'page_obj': page_obj,
-        'posts_count': posts_count,
     }
     return render(request, 'posts/profile.html', context)
 

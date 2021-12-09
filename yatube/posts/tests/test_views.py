@@ -1,11 +1,8 @@
 from django import forms
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from ..models import Group, Post
-
-User = get_user_model()
+from ..models import Group, Post, User
 
 
 class PostViewsTest(TestCase):
@@ -25,6 +22,17 @@ class PostViewsTest(TestCase):
                 text='Тест, тест, тест',
                 group=self.group,
             )
+        self.POST_DETAIL_URL = reverse(
+            'post:post_detail', kwargs={'post_id': self.post.id})
+        self.POST_EDIT_URL = reverse(
+            'post:post_edit', kwargs={'post_id': self.post.id})
+
+    INDEX_URL = reverse('post:index')
+    GROUP_LIST_URL = reverse('post:group_list',
+                             kwargs={'SlugField': 'testslug'})
+    USERNAME_URL = reverse('post:profile',
+                           kwargs={'username': 'auth'})
+    POST_CREATE_URL = reverse('post:post_create')
 
     def setUp(self):
         self.guest_client = Client()
@@ -36,16 +44,12 @@ class PostViewsTest(TestCase):
     def test_names_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         link_names_n_templates = {
-            reverse('post:index'): 'posts/index.html',
-            reverse('post:group_list',
-                    kwargs={'SlugField': 'testslug'}): 'posts/group_list.html',
-            reverse('post:profile',
-                    kwargs={'username': 'auth'}): 'posts/profile.html',
-            reverse('post:post_detail',
-                    kwargs={'post_id': '1'}): 'posts/post_detail.html',
-            reverse('post:post_edit',
-                    kwargs={'post_id': '1'}): 'posts/create_post.html',
-            reverse('post:post_create'): 'posts/create_post.html',
+            self.INDEX_URL: 'posts/index.html',
+            self.GROUP_LIST_URL: 'posts/group_list.html',
+            self.USERNAME_URL: 'posts/profile.html',
+            self.POST_DETAIL_URL: 'posts/post_detail.html',
+            self.POST_EDIT_URL: 'posts/create_post.html',
+            self.POST_CREATE_URL: 'posts/create_post.html',
         }
         for adress, template in link_names_n_templates.items():
             with self.subTest(adress=adress):
@@ -55,11 +59,9 @@ class PostViewsTest(TestCase):
     def test_paginator_n_context_4_pages_with_posts_list(self):
         """проверяем пагинатор и содержимое на страницах со списком статей"""
         link_names = (
-            reverse('post:index'),
-            reverse('post:group_list',
-                    kwargs={'SlugField': 'testslug'}),
-            reverse('post:profile',
-                    kwargs={'username': 'auth'}),
+            self.INDEX_URL,
+            self.GROUP_LIST_URL,
+            self.USERNAME_URL,
         )
         test_dic = {
             'text': 'Тест, тест, тест',
@@ -107,16 +109,13 @@ class PostViewsTest(TestCase):
 
     def test_post_detail_show_correct_context(self):
         """проверяем post_detail на соответствие id, правильности context"""
-        response = self.authorized_client.get(reverse('post:post_detail',
-                                              kwargs={'post_id': '1'}))
-        guest_response = self.guest_client.get(reverse('post:post_detail',
-                                               kwargs={'post_id': '1'}))
+        response = self.authorized_client.get(self.POST_DETAIL_URL)
+        guest_response = self.guest_client.get(self.POST_DETAIL_URL)
         second_authorized_response = self.second_authorized_client.get(
-            reverse('post:post_detail',
-                    kwargs={'post_id': '1'}))
+            self.POST_DETAIL_URL)
 
         self.assertEqual(
-            response.context['post'].id, 1, 'вызван не тот пост')
+            response.context['post'].id, 15, 'вызван не тот пост')
 
         self.assertEqual(
             response.context['post'].text,
@@ -141,8 +140,7 @@ class PostViewsTest(TestCase):
 
     def test_post_edit_show_correct_context(self):
         """проверяем post_edit на id, правильность context и формы"""
-        response = self.authorized_client.get(reverse('post:post_edit',
-                                              kwargs={'post_id': '1'}))
+        response = self.authorized_client.get(self.POST_EDIT_URL)
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
@@ -166,7 +164,7 @@ class PostViewsTest(TestCase):
 
     def test_post_create_show_correct_context(self):
         """проверяем post_create на правильность формы"""
-        response = self.authorized_client.get(reverse('post:post_create'))
+        response = self.authorized_client.get(self.POST_CREATE_URL)
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
@@ -195,7 +193,7 @@ class PostViewsTest(TestCase):
         )
 
         link_names = (
-            reverse('post:index'),
+            self.INDEX_URL,
             reverse('post:group_list',
                     kwargs={'SlugField': 'newslug'}),
             reverse('post:profile',
@@ -227,12 +225,12 @@ class PostViewsTest(TestCase):
                                  f'автор статьи на {name} не соответствует '
                                  + 'передаваемому')
 
-                if name == '/group/testslug/':
+                if name == '/group/newslug/':
                     self.assertEqual(test_dic['group.slug'],
                                      post_group.slug,
                                      f'ошибка фильтра по группе на {name}')
 
-                if name == '/group/auth/':
+                if name == '/group/leo/':
                     self.assertEqual(test_dic['author.username'],
                                      post_author.username,
                                      f'ошибка фильтра по автору на {name}')

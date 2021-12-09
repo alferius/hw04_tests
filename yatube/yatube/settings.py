@@ -98,6 +98,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STRING_EMPTY = '-пусто-'
+POSTS_ON_THE_PAGES = 10
 
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'post:index'
